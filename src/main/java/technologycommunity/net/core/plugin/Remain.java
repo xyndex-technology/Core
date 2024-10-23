@@ -5,7 +5,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Field;
 import java.util.Set;
 
 public class Remain {
@@ -25,15 +24,5 @@ public class Remain {
 
     public static boolean registerCommand(final @NotNull Command command) {
         return registerCommand(command, true);
-    }
-
-    public static Field fastAccessField(final @NotNull Class<?> clazz, final @NotNull String name) {
-        try {
-            final Field field = clazz.getDeclaredField(name);
-            field.setAccessible(true);
-            return field;
-        } catch (NoSuchFieldException ex) {
-            return null;
-        }
     }
 }

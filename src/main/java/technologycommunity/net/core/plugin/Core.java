@@ -2,7 +2,6 @@ package technologycommunity.net.core.plugin;
 
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
-import org.bukkit.command.CommandMap;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -15,7 +14,6 @@ import technologycommunity.net.core.menu.Menu;
 import technologycommunity.net.core.logger.CoreLogger;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.util.Objects;
 
 public class Core extends JavaPlugin {

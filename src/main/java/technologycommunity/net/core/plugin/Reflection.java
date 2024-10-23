@@ -17,8 +17,8 @@ import java.util.jar.JarFile;
 import java.util.regex.Pattern;
 
 public class Reflection {
-    public static class Scanner {
-        public static void scanAndRegister(final Class<?> coreParent) {
+    protected static class Scanner {
+        protected static void scanAndRegister(final Class<?> coreParent) {
             final @NotNull List<Class<?>> classes = Reflection.findValidClasses(coreParent);
 
             for (final Class<?> clazz : classes)
@@ -44,7 +44,7 @@ public class Reflection {
         }
     }
 
-    private static List<Class<?>> findValidClasses(final @NotNull Class<?> c) {
+    protected static List<Class<?>> findValidClasses(final @NotNull Class<?> c) {
         final List<Class<?>> classes = new ArrayList<>();
 
         final Pattern anonymousClassPattern = Pattern.compile("\\w+\\$[0-9]$");
@@ -82,11 +82,19 @@ public class Reflection {
             return Bukkit.getServer().getCommandMap();
         } catch (NoSuchMethodError err) {
             try {
-                final Field f = Bukkit.getServer().getClass().getDeclaredField("commandMap"); f.setAccessible(true);
-                return (CommandMap) f.get(Bukkit.getServer());
-            } catch(Exception e) {
+                return (CommandMap) Objects.requireNonNull(fastAccessField(Bukkit.getServer().getClass(), "commandMap")).get(Bukkit.getServer());
+            } catch (IllegalAccessException | NullPointerException ex) {
                 throw new CoreException("CoreAPI could not get CommandMap.");
             }
+        }
+    }
+
+    public static Field fastAccessField(final @NotNull Class<?> clazz, final @NotNull String name) {
+        try {
+            final Field field = clazz.getDeclaredField(name); field.setAccessible(true);
+            return field;
+        } catch (NoSuchFieldException ex) {
+            return null;
         }
     }
 }
