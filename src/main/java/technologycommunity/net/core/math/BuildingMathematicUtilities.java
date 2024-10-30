@@ -7,7 +7,7 @@ import org.bukkit.block.Block;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Math {
+public class BuildingMathematicUtilities {
     public static Set<Block> getBlocksBetween(final Location firstLocation, final Location secondLocation) {
         final Set<Block> blocks = new HashSet<>();
 

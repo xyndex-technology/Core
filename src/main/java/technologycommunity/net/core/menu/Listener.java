@@ -26,17 +26,15 @@ public class Listener extends CoreListener {
         final Integer page = menu.getPage();
         final Integer slot = event.getSlot();
 
-        final Artist artist = Artist.of(player);
-
         event.setCancelled(true);
 
         if (event.getCurrentItem() == null)
-            menu.onEmptySlotClick(artist, ButtonPosition.of(page, slot));
+            menu.onEmptySlotClick(player, ButtonPosition.of(page, slot));
 
         final Button button = menu.getButton(ButtonPosition.of(slot, page));
 
         if (button != null)
-            button.onButtonClick(artist, menu);
+            button.onButtonClick(player, menu);
     }
 
     @EventHandler
@@ -47,15 +45,13 @@ public class Listener extends CoreListener {
         if (menu == null)
             return;
 
-        final Artist artist = Artist.of(player);
-
         if (menu.isUpdating()) {
             if (menu.getPage() == menu.getLastPage())
-                menu.onMenuPageChange(artist, menu, menu.getLastPage(), menu.getPage());
-            else menu.onMenuUpdate(artist, menu);
+                menu.onMenuPageChange(player, menu, menu.getLastPage(), menu.getPage());
+            else menu.onMenuUpdate(player, menu);
         } else {
             Menu.rejectPlayerMenu(player);
-            menu.onMenuClose(artist, menu);
+            menu.onMenuClose(player, menu);
             menu.restartMenu();
         }
     }

@@ -1,5 +1,6 @@
 package technologycommunity.net.core.menu;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -32,7 +33,7 @@ public abstract class Menu {
     private @NotNull Integer size;
     private @NotNull Integer page = this.getFirstPage();
     private @NotNull Integer lastPage = this.getFirstPage();
-    private @Nullable Artist viewer = null;
+    private @Nullable Player viewer = null;
 
     private boolean updating = false;
 
@@ -160,7 +161,7 @@ public abstract class Menu {
         return this.allowPlayerInventory;
     }
 
-    protected final @Nullable Artist getViewer() {
+    protected final @Nullable Player getViewer() {
         return viewer;
     }
 
@@ -176,7 +177,7 @@ public abstract class Menu {
         if (this.shouldAddPageButtons())
             this.addPageButtons();
 
-        this.pages = Drawer.from(this.buttons, this.title, this.size)
+        this.pages = Drawer.from(this.buttons, this.title, this.size, this.getViewer())
             .draw();
     }
 
@@ -201,11 +202,8 @@ public abstract class Menu {
 
         final Inventory inventory = this.getInventory(getPage());
 
-        final Player player = this.getViewer().getPlayer();
-        final Artist artist = Artist.of(player);
-
         this.viewer.openInventory(inventory);
-        Menu.setPlayerMenu(this.getViewer().getPlayer(), menu);
+        Menu.setPlayerMenu(this.getViewer(), menu);
     }
 
     protected void openMenu() {
@@ -231,13 +229,13 @@ public abstract class Menu {
         final Menu lastMenu = getPlayerMenu(player);
         final Menu menu = this;
 
-        this.viewer = Artist.of(player);
+        this.viewer = player;
         this.openMenu(menu);
 
         if (lastMenu != null)
-            this.onMenuChange(this.viewer, lastMenu, menu);
+            this.onMenuChange(player, lastMenu, menu);
 
-        this.onMenuOpen(this.viewer, menu);
+        this.onMenuOpen(player, menu);
     }
 
     protected final void registerButton(final Button button) {
@@ -266,27 +264,27 @@ public abstract class Menu {
         return registeredMenuList;
     }
 
-    protected void onEmptySlotClick(final @NotNull Artist artist, final @NotNull ButtonPosition position) {
+    protected void onEmptySlotClick(final @NotNull Player clicker, final @NotNull ButtonPosition position) {
 
     }
 
-    protected void onMenuPageChange(final @NotNull Artist artist, final @NotNull Menu menu, final int oldPage, final int newPage) {
+    protected void onMenuPageChange(final @NotNull Player clicker, final @NotNull Menu menu, final int oldPage, final int newPage) {
 
     }
 
-    protected void onMenuChange(final @NotNull Artist artist, final @NotNull Menu oldMenu, final @NotNull Menu newMenu) {
+    protected void onMenuChange(final @NotNull Player clicker, final @NotNull Menu oldMenu, final @NotNull Menu newMenu) {
 
     }
 
-    protected void onMenuUpdate(final @NotNull Artist artist, final @NotNull Menu menu) {
+    protected void onMenuUpdate(final @NotNull Player clicker, final @NotNull Menu menu) {
 
     }
 
-    protected void onMenuOpen(final @NotNull Artist artist, final @NotNull Menu menu) {
+    protected void onMenuOpen(final @NotNull Player clicker, final @NotNull Menu menu) {
 
     }
 
-    protected void onMenuClose(final @NotNull Artist artist, final @NotNull Menu menu) {
+    protected void onMenuClose(final @NotNull Player clicker, final @NotNull Menu menu) {
 
     }
 
@@ -320,12 +318,12 @@ public abstract class Menu {
             this.buttons.add(
                     new Button() {
                         @Override
-                        public void onButtonClick(final @NotNull Artist clicker, final @NotNull Menu menu) {
+                        public void onButtonClick(final @NotNull Player clicker, final @NotNull Menu clickedMenu) {
                             boolean nextPage = nextPage();
 
                             if (nextPage)
-                                clicker.tell("&aSuccessfully changed page to: " + getPage() + ".");
-                            else clicker.tell("&cCouldn't change page.");
+                                clicker.sendMessage(ChatColor.GREEN + "Successfully changed page to: " + getPage() + ".");
+                            else clicker.sendMessage(ChatColor.RED + "Couldn't change page.");
                         }
 
                         @Override
@@ -334,7 +332,7 @@ public abstract class Menu {
                         }
 
                         @Override
-                        public @NotNull ItemStack getItem() {
+                        public @NotNull ItemStack getItem(@NotNull Player viewer) {
                             return ItemCreator.of(Material.PLAYER_HEAD)
                                     .name((canGo(currentPage) ? "&a" : "&c") + "Next")
                                     .skull(TextureType.BASE64, CoreConstants.SKULLS.skullNextArrowAction)
@@ -346,12 +344,12 @@ public abstract class Menu {
             this.buttons.add(
                     new Button() {
                         @Override
-                        public void onButtonClick(final @NotNull Artist clicker, final @NotNull Menu menu) {
+                        public void onButtonClick(final @NotNull Player clicker, final @NotNull Menu clickedMenu) {
                             boolean previousPage = previousPage();
 
                             if (previousPage)
-                                clicker.tell("&aSuccessfully changed page to: " + getPage() + ".");
-                            else clicker.tell("&cCouldn't change page.");
+                                clicker.sendMessage(ChatColor.GREEN + "Successfully changed page to: " + getPage() + ".");
+                            else clicker.sendMessage(ChatColor.RED + "Couldn't change page.");
                         }
 
                         @Override
@@ -360,7 +358,7 @@ public abstract class Menu {
                         }
 
                         @Override
-                        public @NotNull ItemStack getItem() {
+                        public @NotNull ItemStack getItem(@NotNull Player viewer) {
                             return ItemCreator.of(Material.PLAYER_HEAD)
                                     .name((canBack(currentPage) ? "&a" : "&c") + "Previous")
                                     .skull(TextureType.BASE64, CoreConstants.SKULLS.skullPreviousArrowAction)
